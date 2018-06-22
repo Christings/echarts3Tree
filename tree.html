@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="js/echarts.js"></script>
+    <script src="js/jquery-1.9.0.min.js"></script>
+</head>
+<body>
+<style>
+    html, body, #main {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        height: 100%;
+    }
+</style>
+<div id="main"></div>
+<script type="text/javascript">
+
+    (function ($) {
+        var myChart = echarts.init(document.getElementById('main'));
+
+        window.onresize = function () {
+            myChart.resize();
+        };
+
+        $.getJSON('data/d1.json').done(function (data) {
+
+            echarts.util.each(data.children, function (datum, index) {
+                index % 2 === 0 && (datum.collapsed = true);
+            });
+
+            myChart.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    triggerOn: 'mousemove'
+                },
+
+                series: [
+                    {
+                        type: 'tree',
+                        id: '3',
+//                        roam: true,
+//                    nodePadding: 20,
+                        data: [data],
+
+                        left: '7%',
+                        right: '20%',
+                        top: '1%',
+                        bottom: '1%',
+
+                        symbolSize: 12,
+                        symbol: 'circle',
+//                        orient: 'horizontal',
+//                        expandAndCollapse: true,
+
+                        itemStyle: {
+                            normal: {
+                                color: 'green',
+                                borderColor: 'white',
+                                label: {
+                                    show: false,
+                                    formatter: "{b}"
+                                },
+                                lineStyle: {
+                                    color: 'darkgray',
+                                    type: 'solid'  // 'curve'|'broken'|'solid'|'dotted'|'dashed'|'arrow'
+                                },
+                                emphasis: {
+                                    label: {
+                                        show: true
+                                    }
+                                }
+                            }
+                        },
+//                        initialTreeDepth:-1,
+                        label: {
+                            position: 'left',
+                            verticalAlign: 'middle',
+                            align: 'right'
+                        },
+                        leaves: {
+                            label: {
+                                position: 'right',
+                                verticalAlign: 'middle',
+                                align: 'left',
+                            }
+
+                        },
+                        expandAndCollapse: true,
+                        animationDuration: 550,
+                        animationDurationUpdate: 750
+                    }
+                ]
+            });
+            setTimeout(function () {
+                var newData = echarts.util.clone(data);
+                newData.children.splice(0, 0);  //newData.children.splice(0, 1) 官方这么写的，但是会少一个分支
+                myChart.setOption({
+                    series: [{
+                        type: 'tree',
+                        id: '3',
+                        data: [newData]
+                    }]
+                }, false);
+            }, 1000);
+
+        });
+
+
+    }(jQuery));
+
+
+</script>
+</body>
+</html>
